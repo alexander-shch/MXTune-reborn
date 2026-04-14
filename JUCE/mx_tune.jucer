@@ -28,15 +28,16 @@
         <CONFIGURATION isDebug="0" name="Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../../../JUCE_5_4_7/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../JUCE_5_4_7/modules"/>
-        <MODULEPATH id="juce_core" path="../../../JUCE_5_4_7/modules"/>
-        <MODULEPATH id="juce_events" path="../../../JUCE_5_4_7/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../JUCE_5_4_7/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../build/JUCE-5.4.7/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../build/JUCE-5.4.7/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../build/JUCE-5.4.7/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../build/JUCE-5.4.7/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../third_party/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../third_party/JUCE/modules"/>
       </MODULEPATHS>
     </VS2019>
   </EXPORTFORMATS>
@@ -45,6 +46,8 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"
             useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="1"
+            useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
