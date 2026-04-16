@@ -17,6 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install CMake 4
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.x'
+
       - name: Configure tests
         run: cmake -B build-tests tests/ -Wno-dev
 
@@ -43,6 +48,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install CMake 4
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.x'
 
       - name: Install dependencies (Linux)
         if: matrix.name == 'linux'
