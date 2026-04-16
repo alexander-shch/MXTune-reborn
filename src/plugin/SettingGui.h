@@ -41,7 +41,7 @@ class SettingGui  : public Component,
 {
 public:
     //==============================================================================
-    SettingGui (AutotalentAudioProcessor& p);
+    SettingGui (MXTuneAudioProcessor& p);
     ~SettingGui() override;
 
     //==============================================================================
@@ -58,7 +58,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    AutotalentAudioProcessor& _proc;
+    MXTuneAudioProcessor& _proc;
     //[/UserVariables]
 
     //==============================================================================

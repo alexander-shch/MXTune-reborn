@@ -3,7 +3,5 @@ build-juce8/
 build/
 build.log
 errors.log
-JUCE/Builds/
-JUCE/JuceLibraryCode/
 VST3_SDK/
 third_party/

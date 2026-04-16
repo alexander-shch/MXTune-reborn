@@ -18,7 +18,7 @@
 //==============================================================================
 /**
 */
-class AutotalentAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
+class MXTuneAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
 {
 public:
     
@@ -70,8 +70,8 @@ public:
     };
 public:
     //==============================================================================
-    AutotalentAudioProcessor();
-    ~AutotalentAudioProcessor();
+    MXTuneAudioProcessor();
+    ~MXTuneAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -210,5 +210,5 @@ private:
     
     String _state_info;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutotalentAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MXTuneAudioProcessor)
 };
