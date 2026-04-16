@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 4.0)
 
 file(READ "${CMAKE_CURRENT_LIST_DIR}/VERSION" MXTUNE_VERSION)
 string(STRIP "${MXTUNE_VERSION}" MXTUNE_VERSION)
