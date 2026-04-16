@@ -64,6 +64,7 @@ juce_add_plugin(MXTune
     VST3_CATEGORIES             "Fx" "Pitch Shift" "Stereo"
     AU_MAIN_TYPE                kAudioUnitType_Effect
     AU_SANDBOX_SAFE             TRUE
+    COPY_PLUGIN_AFTER_BUILD     TRUE
 )
 
 juce_generate_juce_header(MXTune)
@@ -144,4 +145,11 @@ else()
     if(NOT APPLE)
         target_link_libraries(MXTune PRIVATE PkgConfig::SAMPLERATE)
     endif()
+endif()
+
+# ---------------------------------------------------------------------------
+# Dev tooling — AudioPluginHost (macOS only, not built by default)
+# ---------------------------------------------------------------------------
+if(APPLE)
+    add_subdirectory(third_party/JUCE/extras/AudioPluginHost EXCLUDE_FROM_ALL)
 endif()
