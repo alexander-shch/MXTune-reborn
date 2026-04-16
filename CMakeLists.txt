@@ -49,9 +49,9 @@ else()
 endif()
 
 juce_add_plugin(MXTune
-    COMPANY_NAME                "liuanlin-mx"
-    PLUGIN_MANUFACTURER_CODE    Manu
-    PLUGIN_CODE                 MXTn
+    COMPANY_NAME                "MXTune"
+    PLUGIN_MANUFACTURER_CODE    MxTn
+    PLUGIN_CODE                 MxTu
     FORMATS                     ${_MXTUNE_FORMATS}
     PRODUCT_NAME                "MXTune"
     DESCRIPTION                 "pitch correction"
@@ -70,11 +70,11 @@ juce_add_plugin(MXTune
 juce_generate_juce_header(MXTune)
 
 target_sources(MXTune PRIVATE
-    JUCE/Source/KeyDetectGui.cpp
-    JUCE/Source/PluginGui.cpp
-    JUCE/Source/PluginParameter.cpp
-    JUCE/Source/PluginProcessor.cpp
-    JUCE/Source/SettingGui.cpp
+    src/plugin/KeyDetectGui.cpp
+    src/plugin/PluginGui.cpp
+    src/plugin/PluginParameter.cpp
+    src/plugin/PluginProcessor.cpp
+    src/plugin/SettingGui.cpp
     src/auto_tune.cpp
     src/delay.cpp
     src/manual_tune.cpp
@@ -104,7 +104,7 @@ target_compile_definitions(MXTune
         MXTUNE_VERSION="${MXTUNE_VERSION}"
 )
 
-target_include_directories(MXTune PRIVATE src JUCE/Source)
+target_include_directories(MXTune PRIVATE src src/plugin)
 
 target_link_libraries(MXTune
     PRIVATE

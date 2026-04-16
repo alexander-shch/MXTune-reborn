@@ -43,7 +43,7 @@ class PluginGui  : public AudioProcessorEditor,
 {
 public:
     //==============================================================================
-    PluginGui (AutotalentAudioProcessor& p);
+    PluginGui (MXTuneAudioProcessor& p);
     ~PluginGui() override;
 
     //==============================================================================
@@ -87,7 +87,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    AutotalentAudioProcessor& _proc;
+    MXTuneAudioProcessor& _proc;
     std::int32_t _notes[12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     std::shared_ptr<manual_tune::tune_node> _cur_node;
 

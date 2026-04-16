@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginGui.h"
 #include <list>
@@ -15,7 +5,7 @@
 
 
 //==============================================================================
-AutotalentAudioProcessor::AutotalentAudioProcessor()
+MXTuneAudioProcessor::MXTuneAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
     : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -27,26 +17,16 @@ AutotalentAudioProcessor::AutotalentAudioProcessor()
                        )
 #endif
 {
-    for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
+    for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
     {
         _parameters[i].parameter = new PluginParameter(_parameters[i].name, _parameters[i].def / _parameters[i].scale,
             _parameters[i].min / _parameters[i].scale, _parameters[i].max / _parameters[i].scale, _parameters[i].is_boolean);
         _parameters[i].parameter->addListener(this);
         addParameter(_parameters[i].parameter);
     }
-    
-    _notes[0] = get_parameter(PARAMETER_ID_A) > 0 ? 1: -1;
-    _notes[1] = get_parameter(PARAMETER_ID_Bb) > 0 ? 1: -1;
-    _notes[2] = get_parameter(PARAMETER_ID_B) > 0 ? 1: -1;
-    _notes[3] = get_parameter(PARAMETER_ID_C) > 0 ? 1: -1;
-    _notes[4] = get_parameter(PARAMETER_ID_Db) > 0 ? 1: -1;
-    _notes[5] = get_parameter(PARAMETER_ID_D) > 0 ? 1: -1;
-    _notes[6] = get_parameter(PARAMETER_ID_Eb) > 0 ? 1: -1;
-    _notes[7] = get_parameter(PARAMETER_ID_E) > 0 ? 1: -1;
-    _notes[8] = get_parameter(PARAMETER_ID_F) > 0 ? 1: -1;
-    _notes[9] = get_parameter(PARAMETER_ID_Gb) > 0 ? 1: -1;
-    _notes[10] = get_parameter(PARAMETER_ID_G) > 0 ? 1: -1;
-    _notes[11] = get_parameter(PARAMETER_ID_Ab) > 0 ? 1: -1;
+
+    for (int i = 0; i < 12; ++i)
+        _notes[i] = get_parameter(PARAMETER_ID_A + i) > 0 ? 1 : -1;
     
     _at_amount = get_parameter(PARAMETER_ID_AT_AMOUNT);
     _at_smooth = get_parameter(PARAMETER_ID_AT_SMOOTH);
@@ -66,21 +46,19 @@ AutotalentAudioProcessor::AutotalentAudioProcessor()
     _create_mxtune(_sample_rate);
 }
 
-AutotalentAudioProcessor::~AutotalentAudioProcessor()
+MXTuneAudioProcessor::~MXTuneAudioProcessor()
 {
-    for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
-    {
+    for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
         _parameters[i].parameter->removeListener(this);
-    }
 }
 
 //==============================================================================
-const String AutotalentAudioProcessor::getName() const
+const String MXTuneAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool AutotalentAudioProcessor::acceptsMidi() const
+bool MXTuneAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -89,7 +67,7 @@ bool AutotalentAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool AutotalentAudioProcessor::producesMidi() const
+bool MXTuneAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -98,7 +76,7 @@ bool AutotalentAudioProcessor::producesMidi() const
    #endif
 }
 
-bool AutotalentAudioProcessor::isMidiEffect() const
+bool MXTuneAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -107,41 +85,38 @@ bool AutotalentAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double AutotalentAudioProcessor::getTailLengthSeconds() const
+double MXTuneAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int AutotalentAudioProcessor::getNumPrograms()
+int MXTuneAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int AutotalentAudioProcessor::getCurrentProgram()
+int MXTuneAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void AutotalentAudioProcessor::setCurrentProgram (int index)
+void MXTuneAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String AutotalentAudioProcessor::getProgramName (int index)
+const String MXTuneAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void AutotalentAudioProcessor::changeProgramName (int index, const String& newName)
+void MXTuneAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
 //==============================================================================
-void AutotalentAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MXTuneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    
     if (_mx_tune && _sample_rate != (std::uint32_t)sampleRate)
     {
         _sample_rate = (std::uint32_t)sampleRate;
@@ -150,14 +125,12 @@ void AutotalentAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     }
 }
 
-void AutotalentAudioProcessor::releaseResources()
+void MXTuneAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool AutotalentAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool MXTuneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     ignoreUnused (layouts);
@@ -180,51 +153,36 @@ bool AutotalentAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-void AutotalentAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MXTuneAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-    
 
     if (_is_bypassed)
     {
         _is_bypassed = false;
         _report_latency_samples();
     }
-    
-    AudioPlayHead *play_head = getPlayHead();
-    if (play_head)
-    {
-        if (auto pos = play_head->getPosition())
-        {
-            if (auto t   = pos->getTimeInSeconds())  _cur_time             = *t;
-            if (auto b   = pos->getBpm())            _bpm                  = *b;
-            if (auto ppq = pos->getPpqPosition())    _ppq_position         = *ppq;
-            if (auto ts  = pos->getTimeSignature())  _time_sig_denominator = ts->denominator;
-            _is_playing = pos->getIsPlaying();
-        }
-    }
-    
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    
+
     if (totalNumInputChannels > 0)
     {
+        if (auto* play_head = getPlayHead())
+        {
+            if (auto pos = play_head->getPosition())
+            {
+                if (auto t   = pos->getTimeInSeconds())  _cur_time             = *t;
+                if (auto b   = pos->getBpm())            _bpm                  = *b;
+                if (auto ppq = pos->getPpqPosition())    _ppq_position         = *ppq;
+                if (auto ts  = pos->getTimeSignature())  _time_sig_denominator = ts->denominator;
+                _is_playing = pos->getIsPlaying();
+            }
+        }
+
         auto* channel_data = buffer.getWritePointer (0);
         std::int32_t num_samples =  buffer.getNumSamples();
         if (_mx_tune)
@@ -243,7 +201,7 @@ void AutotalentAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
 }
 
 
-void AutotalentAudioProcessor::processBlockBypassed (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MXTuneAudioProcessor::processBlockBypassed (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     if (!_is_bypassed)
     {
@@ -254,18 +212,18 @@ void AutotalentAudioProcessor::processBlockBypassed (AudioBuffer<float>& buffer,
 }
 
 //==============================================================================
-bool AutotalentAudioProcessor::hasEditor() const
+bool MXTuneAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
-AudioProcessorEditor* AutotalentAudioProcessor::createEditor()
+AudioProcessorEditor* MXTuneAudioProcessor::createEditor()
 {
     return new PluginGui (*this);
 }
 
 //==============================================================================
-void AutotalentAudioProcessor::getStateInformation (MemoryBlock& destData)
+void MXTuneAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     if (_mx_tune == nullptr)
         return;
@@ -315,7 +273,7 @@ void AutotalentAudioProcessor::getStateInformation (MemoryBlock& destData)
     // parameters — one child element per parameter, preserving order
     {
         ValueTree paramsTree("params");
-        for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
+        for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
         {
             ValueTree p("p");
             p.setProperty("v", get_parameter(i), nullptr);
@@ -331,10 +289,8 @@ void AutotalentAudioProcessor::getStateInformation (MemoryBlock& destData)
     root.writeToStream(stream);
 }
 
-void AutotalentAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void MXTuneAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
     if (sizeInBytes < 1 || _mx_tune == nullptr)
     {
         return;
@@ -396,44 +352,6 @@ void AutotalentAudioProcessor::setStateInformation (const void* data, int sizeIn
                 }
             }
         }
-        
-        /*
-        {
-            var outpitch = root["outpitch"];
-            if (!outpitch.isArray())
-            {
-                return;
-            }
-            
-            std::int32_t size = outpitch.size();
-            if (size > 0
-                && outpitch[0].hasProperty("pitch")
-                && outpitch[0].hasProperty("conf")
-                && outpitch[0].hasProperty("time"))
-            {
-                manual_tune::pitch_node last_pitch;
-                last_pitch.pitch = outpitch[0]["pitch"];
-                last_pitch.conf = outpitch[0]["conf"];
-                float last_time = outpitch[0]["time"];
-                for (std::int32_t i = 1; i < size; i++)
-                {
-                    if (outpitch[i].hasProperty("pitch")
-                        && outpitch[i].hasProperty("conf")
-                        && outpitch[i].hasProperty("time"))
-                    {
-                        manual_tune::pitch_node pitch;
-                        pitch.pitch = outpitch[i]["pitch"];
-                        pitch.conf = outpitch[i]["conf"];
-                        float time = outpitch[i]["time"];
-                        
-                        _mx_tune->get_manual_tune().set_outpitch(last_time, time, last_pitch);
-                        last_pitch = pitch;
-                        last_time = time;
-                    }
-                }
-            }
-        }
-        */
         
         {
             var tune = root["tune"];
@@ -587,7 +505,7 @@ void AutotalentAudioProcessor::setStateInformation (const void* data, int sizeIn
 }
 
 
-void AutotalentAudioProcessor::parameterValueChanged (int parameterIndex, float newValue)
+void MXTuneAudioProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
     std::lock_guard<std::mutex> l(_mtx);
 
@@ -697,14 +615,13 @@ void AutotalentAudioProcessor::parameterValueChanged (int parameterIndex, float 
     
 }
 
-void AutotalentAudioProcessor::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+void MXTuneAudioProcessor::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
 {
-    //std::lock_guard<std::mutex> l(_mtx);
     _gesture_is_starting = gestureIsStarting;
 }
 
 
-float AutotalentAudioProcessor::get_parameter(std::uint32_t id)
+float MXTuneAudioProcessor::get_parameter(std::uint32_t id)
 {
     if (id < PARAMETER_ID_NUM)
     {
@@ -713,7 +630,7 @@ float AutotalentAudioProcessor::get_parameter(std::uint32_t id)
     return 0.;
 }
 
-void AutotalentAudioProcessor::set_parameter(std::uint32_t id, float v)
+void MXTuneAudioProcessor::set_parameter(std::uint32_t id, float v)
 {
     if (id < PARAMETER_ID_NUM)
     {
@@ -737,7 +654,7 @@ void AutotalentAudioProcessor::set_parameter(std::uint32_t id, float v)
 }
 
 
-void AutotalentAudioProcessor::set_misc_param(const std::string& misc_param)
+void MXTuneAudioProcessor::set_misc_param(const std::string& misc_param)
 {
     _misc_param = misc_param;
     if (_mx_tune)
@@ -747,7 +664,7 @@ void AutotalentAudioProcessor::set_misc_param(const std::string& misc_param)
     }
 }
 
-void AutotalentAudioProcessor::_create_mxtune(std::uint32_t sample_rate)
+void MXTuneAudioProcessor::_create_mxtune(std::uint32_t sample_rate)
 {
     _mx_tune.reset(new (std::nothrow) mx_tune(sample_rate));
     if (_mx_tune)
@@ -770,7 +687,7 @@ void AutotalentAudioProcessor::_create_mxtune(std::uint32_t sample_rate)
 }
 
 
-void AutotalentAudioProcessor::_report_latency_samples()
+void MXTuneAudioProcessor::_report_latency_samples()
 {
     if (_is_bypassed)
     {
@@ -782,7 +699,7 @@ void AutotalentAudioProcessor::_report_latency_samples()
     }
 }
 
-void AutotalentAudioProcessor::_record_midi_to_note(MidiBuffer& midiMessages, std::int32_t num_samples, float timestamp)
+void MXTuneAudioProcessor::_record_midi_to_note(MidiBuffer& midiMessages, std::int32_t num_samples, float timestamp)
 {
     if (_midi_record)
     {
@@ -818,7 +735,7 @@ void AutotalentAudioProcessor::_record_midi_to_note(MidiBuffer& midiMessages, st
             
 }
     
-void AutotalentAudioProcessor::_output_midi_from_note(MidiBuffer& midiMessages, std::int32_t num_samples, float timestamp)
+void MXTuneAudioProcessor::_output_midi_from_note(MidiBuffer& midiMessages, std::int32_t num_samples, float timestamp)
 {
     if (_midi_export)
     {
@@ -841,15 +758,14 @@ void AutotalentAudioProcessor::_output_midi_from_note(MidiBuffer& midiMessages, 
     }
 }
 
-void AutotalentAudioProcessor::_apply_misc_param()
+void MXTuneAudioProcessor::_apply_misc_param()
 {
     _midi_record = _misc_param.find("midi.record=1") != _misc_param.npos;
     _midi_export = _misc_param.find("midi.export=1") != _misc_param.npos;
 }
     
 //==============================================================================
-// This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new AutotalentAudioProcessor();
+    return new MXTuneAudioProcessor();
 }
