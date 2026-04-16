@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginGui.h"
 #include <list>
@@ -27,26 +17,16 @@ MXTuneAudioProcessor::MXTuneAudioProcessor()
                        )
 #endif
 {
-    for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
+    for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
     {
         _parameters[i].parameter = new PluginParameter(_parameters[i].name, _parameters[i].def / _parameters[i].scale,
             _parameters[i].min / _parameters[i].scale, _parameters[i].max / _parameters[i].scale, _parameters[i].is_boolean);
         _parameters[i].parameter->addListener(this);
         addParameter(_parameters[i].parameter);
     }
-    
-    _notes[0] = get_parameter(PARAMETER_ID_A) > 0 ? 1: -1;
-    _notes[1] = get_parameter(PARAMETER_ID_Bb) > 0 ? 1: -1;
-    _notes[2] = get_parameter(PARAMETER_ID_B) > 0 ? 1: -1;
-    _notes[3] = get_parameter(PARAMETER_ID_C) > 0 ? 1: -1;
-    _notes[4] = get_parameter(PARAMETER_ID_Db) > 0 ? 1: -1;
-    _notes[5] = get_parameter(PARAMETER_ID_D) > 0 ? 1: -1;
-    _notes[6] = get_parameter(PARAMETER_ID_Eb) > 0 ? 1: -1;
-    _notes[7] = get_parameter(PARAMETER_ID_E) > 0 ? 1: -1;
-    _notes[8] = get_parameter(PARAMETER_ID_F) > 0 ? 1: -1;
-    _notes[9] = get_parameter(PARAMETER_ID_Gb) > 0 ? 1: -1;
-    _notes[10] = get_parameter(PARAMETER_ID_G) > 0 ? 1: -1;
-    _notes[11] = get_parameter(PARAMETER_ID_Ab) > 0 ? 1: -1;
+
+    for (int i = 0; i < 12; ++i)
+        _notes[i] = get_parameter(PARAMETER_ID_A + i) > 0 ? 1 : -1;
     
     _at_amount = get_parameter(PARAMETER_ID_AT_AMOUNT);
     _at_smooth = get_parameter(PARAMETER_ID_AT_SMOOTH);
@@ -68,10 +48,8 @@ MXTuneAudioProcessor::MXTuneAudioProcessor()
 
 MXTuneAudioProcessor::~MXTuneAudioProcessor()
 {
-    for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
-    {
+    for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
         _parameters[i].parameter->removeListener(this);
-    }
 }
 
 //==============================================================================
@@ -139,9 +117,6 @@ void MXTuneAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void MXTuneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    
     if (_mx_tune && _sample_rate != (std::uint32_t)sampleRate)
     {
         _sample_rate = (std::uint32_t)sampleRate;
@@ -152,8 +127,6 @@ void MXTuneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 
 void MXTuneAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -195,22 +168,21 @@ void MXTuneAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         _is_bypassed = false;
         _report_latency_samples();
     }
-    
-    AudioPlayHead *play_head = getPlayHead();
-    if (play_head)
-    {
-        if (auto pos = play_head->getPosition())
-        {
-            if (auto t   = pos->getTimeInSeconds())  _cur_time             = *t;
-            if (auto b   = pos->getBpm())            _bpm                  = *b;
-            if (auto ppq = pos->getPpqPosition())    _ppq_position         = *ppq;
-            if (auto ts  = pos->getTimeSignature())  _time_sig_denominator = ts->denominator;
-            _is_playing = pos->getIsPlaying();
-        }
-    }
-    
+
     if (totalNumInputChannels > 0)
     {
+        if (auto* play_head = getPlayHead())
+        {
+            if (auto pos = play_head->getPosition())
+            {
+                if (auto t   = pos->getTimeInSeconds())  _cur_time             = *t;
+                if (auto b   = pos->getBpm())            _bpm                  = *b;
+                if (auto ppq = pos->getPpqPosition())    _ppq_position         = *ppq;
+                if (auto ts  = pos->getTimeSignature())  _time_sig_denominator = ts->denominator;
+                _is_playing = pos->getIsPlaying();
+            }
+        }
+
         auto* channel_data = buffer.getWritePointer (0);
         std::int32_t num_samples =  buffer.getNumSamples();
         if (_mx_tune)
@@ -242,7 +214,7 @@ void MXTuneAudioProcessor::processBlockBypassed (AudioBuffer<float>& buffer, Mid
 //==============================================================================
 bool MXTuneAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 AudioProcessorEditor* MXTuneAudioProcessor::createEditor()
@@ -301,7 +273,7 @@ void MXTuneAudioProcessor::getStateInformation (MemoryBlock& destData)
     // parameters — one child element per parameter, preserving order
     {
         ValueTree paramsTree("params");
-        for (std::uint32_t i = 0; i < sizeof(_parameters) / sizeof(_parameters[0]); i++)
+        for (std::uint32_t i = 0; i < PARAMETER_ID_NUM; i++)
         {
             ValueTree p("p");
             p.setProperty("v", get_parameter(i), nullptr);
@@ -319,8 +291,6 @@ void MXTuneAudioProcessor::getStateInformation (MemoryBlock& destData)
 
 void MXTuneAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
     if (sizeInBytes < 1 || _mx_tune == nullptr)
     {
         return;
@@ -382,44 +352,6 @@ void MXTuneAudioProcessor::setStateInformation (const void* data, int sizeInByte
                 }
             }
         }
-        
-        /*
-        {
-            var outpitch = root["outpitch"];
-            if (!outpitch.isArray())
-            {
-                return;
-            }
-            
-            std::int32_t size = outpitch.size();
-            if (size > 0
-                && outpitch[0].hasProperty("pitch")
-                && outpitch[0].hasProperty("conf")
-                && outpitch[0].hasProperty("time"))
-            {
-                manual_tune::pitch_node last_pitch;
-                last_pitch.pitch = outpitch[0]["pitch"];
-                last_pitch.conf = outpitch[0]["conf"];
-                float last_time = outpitch[0]["time"];
-                for (std::int32_t i = 1; i < size; i++)
-                {
-                    if (outpitch[i].hasProperty("pitch")
-                        && outpitch[i].hasProperty("conf")
-                        && outpitch[i].hasProperty("time"))
-                    {
-                        manual_tune::pitch_node pitch;
-                        pitch.pitch = outpitch[i]["pitch"];
-                        pitch.conf = outpitch[i]["conf"];
-                        float time = outpitch[i]["time"];
-                        
-                        _mx_tune->get_manual_tune().set_outpitch(last_time, time, last_pitch);
-                        last_pitch = pitch;
-                        last_time = time;
-                    }
-                }
-            }
-        }
-        */
         
         {
             var tune = root["tune"];
@@ -833,7 +765,6 @@ void MXTuneAudioProcessor::_apply_misc_param()
 }
     
 //==============================================================================
-// This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new MXTuneAudioProcessor();
