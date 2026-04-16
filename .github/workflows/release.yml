@@ -12,6 +12,10 @@ on:
         description: 'Version to release (e.g. 1.2.29). Defaults to VERSION file.'
         required: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -104,10 +108,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    defaults:
-      run:
-        shell: ${{ matrix.name == 'windows' && 'msys2 {0}' || 'bash' }}
-
     env:
       PLUGIN_VERSION: ${{ needs.prepare.outputs.version }}
 
@@ -116,25 +116,19 @@ jobs:
         with:
           ref: master
 
-      # -----------------------------------------------------------------------
-      # Dependencies — Linux
-      # -----------------------------------------------------------------------
       - name: Install dependencies (Linux)
         if: matrix.name == 'linux'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: >-
-            build-essential cmake pkg-config
+            build-essential pkg-config ninja-build
             libfftw3-dev libsamplerate0-dev
             libaubio-dev libsoundtouch-dev librubberband-dev
-            libx11-dev libxext-dev libxrandr-dev libxinerama-dev libxcursor-dev libxrender-dev libxcomposite-dev libfreetype-dev
+            libx11-dev libxext-dev libxrandr-dev libxinerama-dev libxcursor-dev libxrender-dev libxcomposite-dev libfreetype-dev libfontconfig1-dev
             libcurl4-openssl-dev libasound2-dev
             libglu1-mesa-dev mesa-common-dev
           version: 1.0
 
-      # -----------------------------------------------------------------------
-      # Dependencies — macOS
-      # -----------------------------------------------------------------------
       - name: Cache Homebrew downloads
         if: matrix.name == 'macos'
         uses: actions/cache@v4
@@ -145,257 +139,107 @@ jobs:
 
       - name: Install dependencies (macOS)
         if: matrix.name == 'macos'
-        run: brew install pkg-config cmake fftw aubio sound-touch rubberband
+        run: brew install pkg-config ninja fftw aubio sound-touch rubberband
 
-      # -----------------------------------------------------------------------
-      # Dependencies — Windows
-      # -----------------------------------------------------------------------
-      - name: Set up MSYS2 (Windows)
+      - name: Install dependencies (Windows)
         if: matrix.name == 'windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          cache: true
-          install: >-
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-python3
-            mingw-w64-x86_64-fftw
-            mingw-w64-x86_64-aubio
-            mingw-w64-x86_64-soundtouch
-            mingw-w64-x86_64-rubberband
-            zip unzip
+        run: vcpkg install fftw3 aubio soundtouch rubberband libsamplerate --triplet x64-windows
 
-      # -----------------------------------------------------------------------
-      # VST3 SDK
-      # -----------------------------------------------------------------------
-      - name: Cache VST3 SDK
-        id: cache-vst3
-        uses: actions/cache@v4
+      - name: Setup ccache
+        if: matrix.name != 'windows'
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
-          path: VST3_SDK
-          key: vst3sdk-v3.7.1_build_50-${{ runner.os }}
+          key: release-ccache-${{ matrix.name }}
 
-      - name: Clone VST3 SDK
-        if: steps.cache-vst3.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-        with:
-          repository: steinbergmedia/vst3sdk
-          ref: v3.7.1_build_50
-          path: VST3_SDK
-          submodules: recursive
-          fetch-depth: 1
-
-      # -----------------------------------------------------------------------
-      # JUCE
-      # -----------------------------------------------------------------------
-      - name: Cache JUCE download
+      - name: Cache JUCE
         id: cache-juce
         uses: actions/cache@v4
         with:
-          path: third_party
-          key: juce-7.0.5-${{ runner.os }}
+          path: third_party/JUCE
+          key: juce-8.0.12
 
-      - name: Download JUCE (Linux)
-        if: matrix.name == 'linux' && steps.cache-juce.outputs.cache-hit != 'true'
+      - name: Download JUCE
+        if: steps.cache-juce.outputs.cache-hit != 'true' && matrix.name != 'windows'
         run: |
-          mkdir -p third_party/downloads
-          curl -fL "https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-linux.zip" \
-               -o third_party/downloads/juce-7.0.5-linux.zip
-          unzip -q third_party/downloads/juce-7.0.5-linux.zip -d third_party/
-
-      - name: Download JUCE (macOS)
-        if: matrix.name == 'macos' && steps.cache-juce.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p third_party/downloads
-          curl -fL "https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-osx.zip" \
-               -o third_party/downloads/juce-7.0.5-osx.zip
-          unzip -q third_party/downloads/juce-7.0.5-osx.zip -d third_party/
+          mkdir -p third_party
+          curl -fL "https://github.com/juce-framework/JUCE/archive/refs/tags/8.0.12.zip" \
+               -o third_party/juce-src.zip
+          unzip -q third_party/juce-src.zip -d third_party/
+          mv third_party/JUCE-8.0.12 third_party/JUCE
+          rm third_party/juce-src.zip
 
       - name: Download JUCE (Windows)
-        if: matrix.name == 'windows' && steps.cache-juce.outputs.cache-hit != 'true'
+        if: steps.cache-juce.outputs.cache-hit != 'true' && matrix.name == 'windows'
+        shell: pwsh
         run: |
-          mkdir -p third_party/downloads
-          curl -fL "https://github.com/juce-framework/JUCE/releases/download/7.0.5/juce-7.0.5-windows.zip" \
-               -o third_party/downloads/juce-7.0.5-windows.zip
-          unzip -q third_party/downloads/juce-7.0.5-windows.zip -d third_party/
+          New-Item -ItemType Directory -Force -Path third_party | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/juce-framework/JUCE/archive/refs/tags/8.0.12.zip" `
+                           -OutFile "third_party/juce-src.zip"
+          Expand-Archive -Path "third_party/juce-src.zip" -DestinationPath "third_party/" -Force
+          Rename-Item "third_party/JUCE-8.0.12" "JUCE"
+          Remove-Item "third_party/juce-src.zip"
 
-      - name: Run Projucer (Linux)
+      - name: Configure (Linux)
         if: matrix.name == 'linux'
         run: |
-          PROJUCER="$(pwd)/third_party/JUCE/Projucer"
-          "$PROJUCER" --set-global-search-path linux defaultJuceModulePath "$(pwd)/third_party/JUCE/modules"
-          "$PROJUCER" --resave JUCE/mx_tune.jucer
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -Wno-dev
 
-      - name: Run Projucer (macOS)
-        if: matrix.name == 'macos'
-        run: |
-          PROJUCER="$(pwd)/third_party/JUCE/Projucer.app/Contents/MacOS/Projucer"
-          "$PROJUCER" --set-global-search-path osx defaultJuceModulePath "$(pwd)/third_party/JUCE/modules"
-          "$PROJUCER" --resave JUCE/mx_tune.jucer
-
-      - name: Run Projucer (Windows)
-        if: matrix.name == 'windows'
-        run: |
-          PROJUCER="$(pwd)/third_party/JUCE/Projucer.exe"
-          "$PROJUCER" --set-global-search-path windows defaultJuceModulePath "$(pwd)/third_party/JUCE/modules"
-          "$PROJUCER" --resave JUCE/mx_tune.jucer
-
-      # -----------------------------------------------------------------------
-      # macOS 15+ patch
-      # -----------------------------------------------------------------------
-      - name: Patch JUCE for macOS 15+
-        if: matrix.name == 'macos'
-        run: |
-          python3 - <<'PYEOF'
-          import pathlib, sys
-          p = pathlib.Path('JUCE/JuceLibraryCode/modules/juce_gui_basics/native/juce_mac_Windowing.mm')
-          if not p.exists():
-              print('WARNING: juce_mac_Windowing.mm not found — skipping patch')
-              sys.exit(0)
-          t = p.read_text()
-          OLD = '    JUCE_AUTORELEASEPOOL\n    {\n        CGImageRef screenShot = CGWindowListCreateImage'
-          if OLD not in t:
-              print('INFO: already patched or pattern not found')
-              sys.exit(0)
-          NEW = ('    JUCE_AUTORELEASEPOOL\n    {\n'
-                 '       #if MAC_OS_X_VERSION_MAX_ALLOWED >= 150000\n'
-                 '        juce::ignoreUnused (nsWindow);\n'
-                 '        return Image();\n'
-                 '       #else\n'
-                 '        CGImageRef screenShot = CGWindowListCreateImage')
-          END_OLD = '        CGImageRelease (screenShot);\n\n        return result;\n    }\n}'
-          END_NEW = '        CGImageRelease (screenShot);\n\n        return result;\n       #endif\n    }\n}'
-          t = t.replace(OLD, NEW, 1).replace(END_OLD, END_NEW, 1)
-          p.write_text(t)
-          print('Patched: CGWindowListCreateImage guarded for macOS 15.0+')
-          PYEOF
-
-      # -----------------------------------------------------------------------
-      # CMake build
-      # -----------------------------------------------------------------------
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ matrix.name }}-ccache
-
-      - name: Build (Linux)
-        if: matrix.name == 'linux'
-        run: |
-          mkdir -p build-cmake && cd build-cmake
-          cmake .. -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -G "Unix Makefiles" \
-                   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache -Wno-dev
-          make -j$(nproc)
-
-      - name: Build (macOS)
+      - name: Configure (macOS)
         if: matrix.name == 'macos'
         run: |
           HOMEBREW_PREFIX="$(brew --prefix)"
-          export PKG_CONFIG_PATH="${HOMEBREW_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
-          mkdir -p build-cmake && cd build-cmake
-          cmake .. -DCMAKE_PREFIX_PATH="$HOMEBREW_PREFIX" \
-                   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache -Wno-dev
-          make -j$(sysctl -n hw.logicalcpu)
+          export PKG_CONFIG_PATH="${HOMEBREW_PREFIX}/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$HOMEBREW_PREFIX" \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -Wno-dev
+
+      - name: Configure (Windows)
+        if: matrix.name == 'windows'
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -Wno-dev
+
+      - name: Build
+        if: matrix.name != 'windows'
+        run: cmake --build build --parallel
 
       - name: Build (Windows)
         if: matrix.name == 'windows'
-        run: |
-          mkdir -p build-cmake && cd build-cmake
-          cmake .. -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -G "Ninja" \
-                   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache -Wno-dev
-          ninja -j$(nproc)
+        run: cmake --build build --parallel --config Release
 
       # -----------------------------------------------------------------------
-      # Package
+      # Package — JUCE native CMake produces proper VST3/AU bundles directly
       # -----------------------------------------------------------------------
       - name: Package (Linux)
         if: matrix.name == 'linux'
         run: |
-          BUNDLE="mx_tune-${PLUGIN_VERSION}.vst3"
-          mkdir -p "package/${BUNDLE}/Contents/x86_64-linux"
-          cp build-cmake/libmx_tune.so "package/${BUNDLE}/Contents/x86_64-linux/mx_tune.so"
-          cd package && zip -r "../MXTune-${PLUGIN_VERSION}-linux.zip" "${BUNDLE}"
+          mkdir -p package
+          cp -r "build/MXTune_artefacts/Release/VST3/MXTune.vst3" package/
+          cd package && zip -r "../MXTune-${PLUGIN_VERSION}-linux.zip" "MXTune.vst3"
 
       - name: Package (macOS)
         if: matrix.name == 'macos'
         run: |
-          DYLIB="build-cmake/libmx_tune.dylib"
-          IFS='.' read -r MX_MAJOR MX_MINOR MX_PATCH <<< "$PLUGIN_VERSION"
-          AU_VERSION=$(( (MX_MAJOR << 16) | (MX_MINOR << 8) | MX_PATCH ))
-
-          # ---- VST3 bundle ----
-          BUNDLE="mx_tune-${PLUGIN_VERSION}.vst3"
-          mkdir -p "package/${BUNDLE}/Contents/MacOS"
-          cp "$DYLIB" "package/${BUNDLE}/Contents/MacOS/mx_tune"
-          cat > "package/${BUNDLE}/Contents/Info.plist" <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleDevelopmentRegion</key><string>English</string>
-              <key>CFBundleExecutable</key><string>mx_tune</string>
-              <key>CFBundleIdentifier</key><string>com.mxtune.MXTune</string>
-              <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-              <key>CFBundleName</key><string>MXTune</string>
-              <key>CFBundlePackageType</key><string>BNDL</string>
-              <key>CFBundleShortVersionString</key><string>${PLUGIN_VERSION}</string>
-              <key>CFBundleVersion</key><string>${PLUGIN_VERSION}</string>
-              <key>CFBundleSignature</key><string>MXTn</string>
-          </dict>
-          </plist>
-          PLIST
-          printf "BNDLMXTn" > "package/${BUNDLE}/Contents/PkgInfo"
-          codesign --force --sign - "package/${BUNDLE}"
-
-          # ---- AU component bundle ----
-          AU_BUNDLE="mx_tune-${PLUGIN_VERSION}.component"
-          mkdir -p "package/${AU_BUNDLE}/Contents/MacOS"
-          cp "$DYLIB" "package/${AU_BUNDLE}/Contents/MacOS/mx_tune"
-          cat > "package/${AU_BUNDLE}/Contents/Info.plist" <<AUPLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleDevelopmentRegion</key><string>English</string>
-              <key>CFBundleExecutable</key><string>mx_tune</string>
-              <key>CFBundleIdentifier</key><string>com.mxtune.MXTune.AU</string>
-              <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-              <key>CFBundleName</key><string>MXTune</string>
-              <key>CFBundlePackageType</key><string>BNDL</string>
-              <key>CFBundleShortVersionString</key><string>${PLUGIN_VERSION}</string>
-              <key>CFBundleVersion</key><string>${PLUGIN_VERSION}</string>
-              <key>CFBundleSignature</key><string>Manu</string>
-              <key>AudioComponents</key>
-              <array>
-                  <dict>
-                      <key>type</key><string>aufx</string>
-                      <key>subtype</key><string>MXTn</string>
-                      <key>manufacturer</key><string>Manu</string>
-                      <key>name</key><string>MXTune: Pitch Correction</string>
-                      <key>version</key><integer>${AU_VERSION}</integer>
-                      <key>factoryFunction</key><string>MXTuneAUFactory</string>
-                      <key>sandboxSafe</key><true/>
-                  </dict>
-              </array>
-          </dict>
-          </plist>
-          AUPLIST
-          printf "BNDLManu" > "package/${AU_BUNDLE}/Contents/PkgInfo"
-          codesign --force --sign - "package/${AU_BUNDLE}"
-
-          cd package && zip -r "../MXTune-${PLUGIN_VERSION}-macos.zip" "${BUNDLE}" "${AU_BUNDLE}"
+          mkdir -p package
+          cp -r "build/MXTune_artefacts/Release/VST3/MXTune.vst3" package/
+          cp -r "build/MXTune_artefacts/Release/AU/MXTune.component" package/
+          codesign --force --sign - "package/MXTune.vst3"
+          codesign --force --sign - "package/MXTune.component"
+          cd package && zip -r "../MXTune-${PLUGIN_VERSION}-macos.zip" "MXTune.vst3" "MXTune.component"
 
       - name: Package (Windows)
         if: matrix.name == 'windows'
+        shell: pwsh
         run: |
-          BUNDLE="mx_tune-${PLUGIN_VERSION}.vst3"
-          BUNDLE_DIR="package/${BUNDLE}/Contents/x86_64-win"
-          mkdir -p "$BUNDLE_DIR"
-          cp build-cmake/libmx_tune.dll "${BUNDLE_DIR}/mx_tune.vst3"
-          cd package && zip -r "../MXTune-${PLUGIN_VERSION}-windows.zip" "${BUNDLE}"
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item -Recurse "build/MXTune_artefacts/Release/VST3/MXTune.vst3" "package/"
+          Compress-Archive -Path "package/MXTune.vst3" `
+            -DestinationPath "MXTune-$env:PLUGIN_VERSION-windows.zip" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -429,14 +273,14 @@ jobs:
           ### Installation
 
           **macOS** — extract \`MXTune-*-macos.zip\`:
-          - VST3: move \`mx_tune-*.vst3\` to \`/Library/Audio/Plug-Ins/VST3/\`
-          - AU: move \`mx_tune-*.component\` to \`/Library/Audio/Plug-Ins/Components/\`
+          - VST3: move \`MXTune.vst3\` to \`/Library/Audio/Plug-Ins/VST3/\`
+          - AU: move \`MXTune.component\` to \`/Library/Audio/Plug-Ins/Components/\`
 
           Rescan plugins in your DAW.
 
-          **Windows** — extract \`MXTune-*-windows.zip\`, move the \`.vst3\` folder to \`C:\Program Files\Common Files\VST3/\`, rescan in your DAW.
+          **Windows** — extract \`MXTune-*-windows.zip\`, move the \`MXTune.vst3\` folder to \`C:\Program Files\Common Files\VST3\\\`, rescan in your DAW.
 
-          **Linux** — extract \`MXTune-*-linux.zip\`, move the \`.vst3\` folder to \`~/.vst3/\` or \`/usr/lib/vst3/\`, rescan in your DAW.
+          **Linux** — extract \`MXTune-*-linux.zip\`, move the \`MXTune.vst3\` folder to \`~/.vst3/\` or \`/usr/lib/vst3/\`, rescan in your DAW.
           EOF
 
       - name: Create GitHub Release

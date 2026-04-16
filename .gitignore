@@ -1,4 +1,6 @@
 build-cmake/
+build-juce8/
+build/
 build.log
 errors.log
 JUCE/Builds/
