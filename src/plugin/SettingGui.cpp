@@ -27,7 +27,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-SettingGui::SettingGui (AutotalentAudioProcessor& p)
+SettingGui::SettingGui (MXTuneAudioProcessor& p)
     : _proc(p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -219,16 +219,16 @@ SettingGui::SettingGui (AutotalentAudioProcessor& p)
 
 
     //[Constructor] You can add your own custom stuff here..
-    comboBoxDetAlg->setSelectedId(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_ALG) + 1, dontSendNotification);
-    comboBoxSftAlg->setSelectedId(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SFT_ALG) + 1, dontSendNotification);
+    comboBoxDetAlg->setSelectedId(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_ALG) + 1, dontSendNotification);
+    comboBoxSftAlg->setSelectedId(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SFT_ALG) + 1, dontSendNotification);
 
-    sliderMinFreq->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_MIN_FREQ), dontSendNotification);
-    sliderMaxFreq->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_MAX_FREQ), dontSendNotification);
+    sliderMinFreq->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_MIN_FREQ), dontSendNotification);
+    sliderMaxFreq->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_MAX_FREQ), dontSendNotification);
 
-    sliderAfreq->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_AFREQ), dontSendNotification);
-    sliderGate->setValue(-_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_GATE), dontSendNotification);
+    sliderAfreq->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_AFREQ), dontSendNotification);
+    sliderGate->setValue(-_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_GATE), dontSendNotification);
 
-    sliderVThresh->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_VTHRESH), dontSendNotification);
+    sliderVThresh->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_VTHRESH), dontSendNotification);
 
     textEditorMisc->setText(_proc.get_misc_param(), false);
     //[/Constructor]
@@ -348,16 +348,16 @@ void SettingGui::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_textButtonApply] -- add your button handler code here..
 
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_ALG, comboBoxDetAlg->getSelectedId() - 1);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_SFT_ALG, comboBoxSftAlg->getSelectedId() - 1);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_ALG, comboBoxDetAlg->getSelectedId() - 1);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_SFT_ALG, comboBoxSftAlg->getSelectedId() - 1);
 
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_MIN_FREQ, sliderMinFreq->getValue());
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_MAX_FREQ, sliderMaxFreq->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_MIN_FREQ, sliderMinFreq->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_MAX_FREQ, sliderMaxFreq->getValue());
 
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_AFREQ, sliderAfreq->getValue());
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DET_GATE, -sliderGate->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_AFREQ, sliderAfreq->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DET_GATE, -sliderGate->getValue());
 
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_VTHRESH, sliderVThresh->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_VTHRESH, sliderVThresh->getValue());
 
         _proc.set_misc_param(textEditorMisc->getText().toStdString());
         _proc.report_latency_samples();
@@ -384,7 +384,7 @@ void SettingGui::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="SettingGui" componentName=""
-                 parentClasses="public Component" constructorParams="AutotalentAudioProcessor&amp; p"
+                 parentClasses="public Component" constructorParams="MXTuneAudioProcessor&amp; p"
                  variableInitialisers="_proc(p)" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="600"
                  initialHeight="400">
