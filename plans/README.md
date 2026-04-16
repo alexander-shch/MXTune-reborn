@@ -36,29 +36,6 @@ What was delivered (scope expanded beyond original plan):
 
 ---
 
-### 05 — Dev Tooling
-**Target:** Replace the manual build→copy→restart-DAW loop with a one-command dev cycle.
-**Prerequisite:** ✅ Met (Plan 01 merged).
-
-Key changes:
-- `COPY_PLUGIN_AFTER_BUILD TRUE` in `juce_add_plugin()` — auto-copies plugin after every build
-- Build JUCE `AudioPluginHost` from extras — relaunches in ~1s vs Reaper's full scan
-- `scripts/dev.sh` — builds and relaunches the host with MXTune pre-loaded
-
-See **[05_DEV_TOOLING.md](05_DEV_TOOLING.md)** for full setup details and a "when to use what" guide.
-
----
-
-### 06 — CMake 4 Upgrade
-**Target:** Bump `cmake_minimum_required` to CMake 4.x before major feature work begins.
-**Prerequisite:** ✅ Met (Plan 01 merged). Current minimum is 3.22.
-
-Key risk: macOS SDK handling changed in 4.0 — no longer sets `-isysroot` automatically. Likely transparent with Apple Clang but must be verified on CI. One-line fix if needed (`-DCMAKE_OSX_SYSROOT=macosx`).
-
-See **[06_CMAKE4_UPGRADE.md](06_CMAKE4_UPGRADE.md)** for full steps.
-
----
-
 ### 02 — ARA Implementation
 **Target:** Migrate from real-time `processBlock` scanning to full-clip offline analysis via JUCE 8 ARA.
 **Prerequisite:** ✅ Met (Plan 01 merged).
@@ -102,3 +79,26 @@ Key deliverables:
 - `MXTuneLookAndFeel` — custom JUCE LookAndFeel (pill toggles, flat sliders, styled buttons)
 - Pitch grid repaint — alternating row shading, blob glow, pitch lines above blobs
 - Status bar — live pitch, cents offset, zoom, time position
+
+---
+
+### 05 — Dev Tooling
+**Target:** Replace the manual build→copy→restart-DAW loop with a one-command dev cycle.
+**Prerequisite:** ✅ Met (Plan 01 merged).
+
+Key changes:
+- `COPY_PLUGIN_AFTER_BUILD TRUE` in `juce_add_plugin()` — auto-copies plugin after every build
+- Build JUCE `AudioPluginHost` from extras — relaunches in ~1s vs Reaper's full scan
+- `scripts/dev.sh` — builds and relaunches the host with MXTune pre-loaded
+
+See **[05_DEV_TOOLING.md](05_DEV_TOOLING.md)** for full setup details and a "when to use what" guide.
+
+---
+
+### 06 — CMake 4 Upgrade
+**Target:** Bump `cmake_minimum_required` to CMake 4.x before major feature work begins.
+**Prerequisite:** ✅ Met (Plan 01 merged). Current minimum is 3.22.
+
+Key risk: macOS SDK handling changed in 4.0 — no longer sets `-isysroot` automatically. Likely transparent with Apple Clang but must be verified on CI. One-line fix if needed (`-DCMAKE_OSX_SYSROOT=macosx`).
+
+See **[06_CMAKE4_UPGRADE.md](06_CMAKE4_UPGRADE.md)** for full steps.
