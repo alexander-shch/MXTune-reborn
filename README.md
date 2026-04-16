@@ -1,6 +1,6 @@
 # MXTune
 
-[![Build and Release](https://github.com/alexander-shch/MXTune/actions/workflows/release.yml/badge.svg)](https://github.com/alexander-shch/MXTune/actions/workflows/release.yml)
+[![Build and Release](https://github.com/alexander-shch/MXTune-reborn/actions/workflows/release.yml/badge.svg)](https://github.com/alexander-shch/MXTune-reborn/actions/workflows/release.yml)
 
 An open-source auto-tune / pitch correction audio plugin (VST3/AU) with real-time pitch detection and correction to a user-defined musical scale or MIDI-driven note mapping.
 
@@ -10,7 +10,7 @@ An open-source auto-tune / pitch correction audio plugin (VST3/AU) with real-tim
 - [Installation](#installation)
 - [Usage](#usage)
 - [Building from Source](./docs/BUILDING.md)
-- [Roadmap](./plans/README.md)
+- [Roadmap](https://github.com/users/alexander-shch/projects/7)
 - [Developer Notes](./docs/DEVELOPER_NOTES.md)
 - [Troubleshooting](./docs/TROUBLESHOOTING.md)
 - [Changelog](./CHANGELOG.md)
@@ -24,11 +24,11 @@ An open-source auto-tune / pitch correction audio plugin (VST3/AU) with real-tim
 
 | Platform | Download |
 |---|---|
-| macOS | [Latest release](https://github.com/alexander-shch/MXTune/releases/latest) |
-| Windows | [Latest release](https://github.com/alexander-shch/MXTune/releases/latest) |
-| Linux | [Latest release](https://github.com/alexander-shch/MXTune/releases/latest) |
+| macOS | [Latest release](https://github.com/alexander-shch/MXTune-reborn/releases/latest) |
+| Windows | [Latest release](https://github.com/alexander-shch/MXTune-reborn/releases/latest) |
+| Linux | [Latest release](https://github.com/alexander-shch/MXTune-reborn/releases/latest) |
 
-All releases: [github.com/alexander-shch/MXTune/releases](https://github.com/alexander-shch/MXTune/releases)
+All releases: [github.com/alexander-shch/MXTune-reborn/releases](https://github.com/alexander-shch/MXTune-reborn/releases)
 
 ---
 
@@ -68,7 +68,7 @@ Extract the `.zip`, move the `.vst3` folder to `~/.vst3/` or `/usr/lib/vst3/`.
 
 The next major milestone is **ARA (Audio Random Access)** support, enabling full-clip pitch analysis without requiring the host to play audio through the plugin. This will be the foundation for vibrato control, syllable time-stretching, and multi-instance pitch grid overlays.
 
-For the full execution plan, phase breakdown, and testing strategy, see **[plans/](./plans/README.md)**.
+For the full execution plan, phase breakdown, and testing strategy, see the **[project board](https://github.com/users/alexander-shch/projects/7)**.
 
 ---
 
