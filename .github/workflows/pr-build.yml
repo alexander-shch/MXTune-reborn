@@ -70,7 +70,11 @@ jobs:
 
       - name: Install dependencies (Windows)
         if: matrix.name == 'windows'
-        run: vcpkg install fftw3 aubio soundtouch rubberband libsamplerate --triplet x64-windows
+        shell: pwsh
+        run: |
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git "$env:VCPKG_INSTALLATION_ROOT-latest"
+          & "$env:VCPKG_INSTALLATION_ROOT-latest\bootstrap-vcpkg.bat"
+          & "$env:VCPKG_INSTALLATION_ROOT-latest\vcpkg.exe" install fftw3 aubio soundtouch rubberband libsamplerate --triplet x64-windows
 
       - name: Setup ccache
         if: matrix.name != 'windows'
@@ -127,7 +131,7 @@ jobs:
         if: matrix.name == 'windows'
         run: |
           cmake -B build -G "Visual Studio 17 2022" -A x64 `
-            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT-latest/scripts/buildsystems/vcpkg.cmake" `
             -DVCPKG_TARGET_TRIPLET=x64-windows `
             -Wno-dev
 
