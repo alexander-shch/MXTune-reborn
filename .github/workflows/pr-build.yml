@@ -1,8 +1,6 @@
 name: PR Build
 
 on:
-  push:
-    branches: [test/pitch-shifter-unit-tests]
   pull_request:
 
 concurrency:
@@ -84,6 +82,13 @@ jobs:
         with:
           key: ccache-${{ matrix.name }}
 
+      - name: Setup sccache (Windows)
+        if: matrix.name == 'windows'
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: sccache-windows
+          variant: sccache
+
       - name: Cache JUCE
         id: cache-juce
         uses: actions/cache@v4
@@ -112,6 +117,10 @@ jobs:
           Rename-Item "third_party/JUCE-8.0.12" "JUCE"
           Remove-Item "third_party/juce-src.zip"
 
+      - name: Setup MSVC environment (Windows)
+        if: matrix.name == 'windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Configure (Linux)
         if: matrix.name == 'linux'
         run: |
@@ -132,15 +141,11 @@ jobs:
       - name: Configure (Windows)
         if: matrix.name == 'windows'
         run: |
-          cmake -B build -G "Visual Studio 17 2022" -A x64 `
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release `
             "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT-latest/scripts/buildsystems/vcpkg.cmake" `
             -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCMAKE_C_COMPILER_LAUNCHER=sccache `
             -Wno-dev
 
       - name: Build
-        if: matrix.name != 'windows'
         run: cmake --build build --parallel
-
-      - name: Build (Windows)
-        if: matrix.name == 'windows'
-        run: cmake --build build --parallel --config Release
