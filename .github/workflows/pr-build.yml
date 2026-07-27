@@ -1,6 +1,8 @@
 name: PR Build
 
 on:
+  push:
+    branches: [test/pitch-shifter-unit-tests]
   pull_request:
 
 concurrency:
