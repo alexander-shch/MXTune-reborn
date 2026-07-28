@@ -72,22 +72,15 @@ jobs:
         if: matrix.name == 'windows'
         shell: pwsh
         run: |
-          git clone --depth 1 https://github.com/microsoft/vcpkg.git "$env:VCPKG_INSTALLATION_ROOT-latest"
-          & "$env:VCPKG_INSTALLATION_ROOT-latest\bootstrap-vcpkg.bat"
-          & "$env:VCPKG_INSTALLATION_ROOT-latest\vcpkg.exe" install fftw3 aubio soundtouch rubberband libsamplerate --triplet x64-windows
+          $portfile = "$env:VCPKG_INSTALLATION_ROOT\ports\soundtouch\portfile.cmake"
+          (Get-Content $portfile -Raw) -replace 'SHA512 8bd199c6363104ba6c9af1abbd3c4da3567ccda5fe3a68298917817fc9312ecb0914609afba1abd864307b0a596becf450bc7073eeec17b1de5a7c5086fbc45e', 'SHA512 97e4afcce100f210d89c665dd83f4eaa7b0bec88ba35ba1cf29729e9260d143a5c0f89156646c4dddc83030c5f6b8493c6abc1a82bfba52ed6a87929c8e0fdea' | Set-Content $portfile
+          vcpkg install fftw3 aubio soundtouch rubberband libsamplerate --triplet x64-windows
 
       - name: Setup ccache
         if: matrix.name != 'windows'
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-${{ matrix.name }}
-
-      - name: Setup sccache (Windows)
-        if: matrix.name == 'windows'
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: sccache-windows
-          variant: sccache
 
       - name: Cache JUCE
         id: cache-juce
@@ -117,10 +110,6 @@ jobs:
           Rename-Item "third_party/JUCE-8.0.12" "JUCE"
           Remove-Item "third_party/juce-src.zip"
 
-      - name: Setup MSVC environment (Windows)
-        if: matrix.name == 'windows'
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Configure (Linux)
         if: matrix.name == 'linux'
         run: |
@@ -141,11 +130,15 @@ jobs:
       - name: Configure (Windows)
         if: matrix.name == 'windows'
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release `
-            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT-latest/scripts/buildsystems/vcpkg.cmake" `
+          cmake -B build -G "Visual Studio 17 2022" -A x64 `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
             -DVCPKG_TARGET_TRIPLET=x64-windows `
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCMAKE_C_COMPILER_LAUNCHER=sccache `
             -Wno-dev
 
       - name: Build
+        if: matrix.name != 'windows'
         run: cmake --build build --parallel
+
+      - name: Build (Windows)
+        if: matrix.name == 'windows'
+        run: cmake --build build --parallel --config Release
