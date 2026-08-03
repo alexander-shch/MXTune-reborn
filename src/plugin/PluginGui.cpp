@@ -29,7 +29,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-PluginGui::PluginGui (AutotalentAudioProcessor& p)
+PluginGui::PluginGui (MXTuneAudioProcessor& p)
     : AudioProcessorEditor(p), _proc(p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -805,7 +805,7 @@ void PluginGui::sliderValueChanged (Slider* sliderThatWasMoved)
         }
         else
         {
-            _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_ATTACK, sliderThatWasMoved->getValue() / 1000.);
+            _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_ATTACK, sliderThatWasMoved->getValue() / 1000.);
         }
         //[/UserSliderCode_sliderAttack]
     }
@@ -818,7 +818,7 @@ void PluginGui::sliderValueChanged (Slider* sliderThatWasMoved)
         }
         else
         {
-            _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_RELEASE, sliderThatWasMoved->getValue() / 1000.);
+            _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_RELEASE, sliderThatWasMoved->getValue() / 1000.);
         }
         //[/UserSliderCode_sliderRelease]
     }
@@ -831,32 +831,32 @@ void PluginGui::sliderValueChanged (Slider* sliderThatWasMoved)
         }
         else
         {
-            _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_AMOUNT, sliderThatWasMoved->getValue());
+            _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_AMOUNT, sliderThatWasMoved->getValue());
         }
         //[/UserSliderCode_sliderAmount]
     }
     else if (sliderThatWasMoved == sliderATSmooth.get())
     {
         //[UserSliderCode_sliderATSmooth] -- add your slider handling code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_AT_SMOOTH, sliderThatWasMoved->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_AT_SMOOTH, sliderThatWasMoved->getValue());
         //[/UserSliderCode_sliderATSmooth]
     }
     else if (sliderThatWasMoved == sliderATAmount.get())
     {
         //[UserSliderCode_sliderATAmount] -- add your slider handling code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_AT_AMOUNT, sliderThatWasMoved->getValue());
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_AT_AMOUNT, sliderThatWasMoved->getValue());
         //[/UserSliderCode_sliderATAmount]
     }
     else if (sliderThatWasMoved == sliderMinLen.get())
     {
         //[UserSliderCode_sliderMinLen] -- add your slider handling code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT, sliderThatWasMoved->getValue() / 1000.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT, sliderThatWasMoved->getValue() / 1000.);
         //[/UserSliderCode_sliderMinLen]
     }
     else if (sliderThatWasMoved == sliderMaxInterval.get())
     {
         //[UserSliderCode_sliderMaxInterval] -- add your slider handling code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL, sliderThatWasMoved->getValue() / 1000.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL, sliderThatWasMoved->getValue() / 1000.);
         //[/UserSliderCode_sliderMaxInterval]
     }
 
@@ -872,180 +872,180 @@ void PluginGui::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == toggleButtonTrack.get())
     {
         //[UserButtonCode_toggleButtonTrack] -- add your button handler code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_ENABLE_TRACK, buttonThatWasClicked->getToggleState()? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_ENABLE_TRACK, buttonThatWasClicked->getToggleState()? 1.: 0.);
         //[/UserButtonCode_toggleButtonTrack]
     }
     else if (buttonThatWasClicked == toggleButtonAutoTune.get())
     {
         //[UserButtonCode_toggleButtonAutoTune] -- add your button handler code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_ENABLE_AUTOTUNE, buttonThatWasClicked->getToggleState()? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_ENABLE_AUTOTUNE, buttonThatWasClicked->getToggleState()? 1.: 0.);
         //[/UserButtonCode_toggleButtonAutoTune]
     }
     else if (buttonThatWasClicked == toggleButtonNoteA.get())
     {
         //[UserButtonCode_toggleButtonNoteA] -- add your button handler code here..
         _notes[_key_A] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_A, (_notes[_key_A] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_A, (_notes[_key_A] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteA]
     }
     else if (buttonThatWasClicked == toggleButtonNoteBb.get())
     {
         //[UserButtonCode_toggleButtonNoteBb] -- add your button handler code here..
         _notes[_key_Bb] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Bb, (_notes[_key_Bb] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Bb, (_notes[_key_Bb] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteBb]
     }
     else if (buttonThatWasClicked == toggleButtonNoteB.get())
     {
         //[UserButtonCode_toggleButtonNoteB] -- add your button handler code here..
         _notes[_key_B] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_B, (_notes[_key_B] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_B, (_notes[_key_B] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteB]
     }
     else if (buttonThatWasClicked == toggleButtonNoteC.get())
     {
         //[UserButtonCode_toggleButtonNoteC] -- add your button handler code here..
         _notes[_key_C] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_C, (_notes[_key_C] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_C, (_notes[_key_C] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteC]
     }
     else if (buttonThatWasClicked == toggleButtonNoteDb.get())
     {
         //[UserButtonCode_toggleButtonNoteDb] -- add your button handler code here..
         _notes[_key_Db] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Db, (_notes[_key_Db] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Db, (_notes[_key_Db] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteDb]
     }
     else if (buttonThatWasClicked == toggleButtonNoteD.get())
     {
         //[UserButtonCode_toggleButtonNoteD] -- add your button handler code here..
         _notes[_key_D] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_D, (_notes[_key_D] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_D, (_notes[_key_D] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteD]
     }
     else if (buttonThatWasClicked == toggleButtonNoteEb.get())
     {
         //[UserButtonCode_toggleButtonNoteEb] -- add your button handler code here..
         _notes[_key_Eb] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Eb, (_notes[_key_Eb] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Eb, (_notes[_key_Eb] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteEb]
     }
     else if (buttonThatWasClicked == toggleButtonNoteE.get())
     {
         //[UserButtonCode_toggleButtonNoteE] -- add your button handler code here..
         _notes[_key_E] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_E, (_notes[_key_E] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_E, (_notes[_key_E] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteE]
     }
     else if (buttonThatWasClicked == toggleButtonNoteF.get())
     {
         //[UserButtonCode_toggleButtonNoteF] -- add your button handler code here..
         _notes[_key_F] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_F, (_notes[_key_F] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_F, (_notes[_key_F] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteF]
     }
     else if (buttonThatWasClicked == toggleButtonNoteGb.get())
     {
         //[UserButtonCode_toggleButtonNoteGb] -- add your button handler code here..
         _notes[_key_Gb] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Gb, (_notes[_key_Gb] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Gb, (_notes[_key_Gb] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteGb]
     }
     else if (buttonThatWasClicked == toggleButtonNoteAb.get())
     {
         //[UserButtonCode_toggleButtonNoteAb] -- add your button handler code here..
         _notes[_key_Ab] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Ab, (_notes[_key_Ab] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Ab, (_notes[_key_Ab] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteAb]
     }
     else if (buttonThatWasClicked == toggleButtonNoteG.get())
     {
         //[UserButtonCode_toggleButtonNoteG] -- add your button handler code here..
         _notes[_key_G] = buttonThatWasClicked->getToggleState()? 1: -1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_G, (_notes[_key_G] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_G, (_notes[_key_G] > 0)? 1.: 0.);
         _key = _key_custom;
         _key_type = _key_type_custom;
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         //[/UserButtonCode_toggleButtonNoteG]
     }
     else if (buttonThatWasClicked == textButtonSnapKey.get())
     {
         //[UserButtonCode_textButtonSnapKey] -- add your button handler code here..
 
-        float attack = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_ATTACK);
-        float release = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_RELEASE);
-        float amount = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_AMOUNT);
-        float min_length = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT);
-        float max_interval = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL);
+        float attack = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_ATTACK);
+        float release = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_RELEASE);
+        float amount = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_AMOUNT);
+        float min_length = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT);
+        float max_interval = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL);
 
         _proc.get_mt_tune()->snap_key(min_length, max_interval, attack, release, amount);
         //[/UserButtonCode_textButtonSnapKey]
@@ -1059,7 +1059,7 @@ void PluginGui::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == toggleButtonSnap.get())
     {
         //[UserButtonCode_toggleButtonSnap] -- add your button handler code here..
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP, buttonThatWasClicked->getToggleState()? 1: 0);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP, buttonThatWasClicked->getToggleState()? 1: 0);
         //[/UserButtonCode_toggleButtonSnap]
     }
     else if (buttonThatWasClicked == textButtonClearNote.get())
@@ -1077,8 +1077,8 @@ void PluginGui::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == textButtonDetectKey.get())
     {
         //[UserButtonCode_textButtonDetectKey] -- add your button handler code here..
-        float min_length = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT);
-        float max_interval = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL);
+        float min_length = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT);
+        float max_interval = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL);
 
         float notes_weights[12];
         if (_proc.get_manual_tune().check_key(notes_weights, min_length, max_interval))
@@ -1109,8 +1109,8 @@ void PluginGui::buttonClicked (Button* buttonThatWasClicked)
                 comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
                 comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
 
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
 
 
                 toggleButtonNoteA->setToggleState((_notes[0] > 0), dontSendNotification);
@@ -1127,18 +1127,18 @@ void PluginGui::buttonClicked (Button* buttonThatWasClicked)
                 toggleButtonNoteAb->setToggleState((_notes[11] > 0), dontSendNotification);
 
 
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_A, (_notes[0] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Bb, (_notes[1] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_B, (_notes[2] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_C, (_notes[3] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Db, (_notes[4] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_D, (_notes[5] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Eb, (_notes[6] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_E, (_notes[7] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_F, (_notes[8] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Gb, (_notes[9] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_G, (_notes[10] > 0)? 1.: 0.);
-                _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Ab, (_notes[11] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_A, (_notes[0] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Bb, (_notes[1] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_B, (_notes[2] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_C, (_notes[3] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Db, (_notes[4] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_D, (_notes[5] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Eb, (_notes[6] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_E, (_notes[7] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_F, (_notes[8] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Gb, (_notes[9] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_G, (_notes[10] > 0)? 1.: 0.);
+                _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Ab, (_notes[11] > 0)? 1.: 0.);
             }
         }
         //[/UserButtonCode_textButtonDetectKey]
@@ -1194,7 +1194,7 @@ void PluginGui::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_comboBoxKey] -- add your combo box handling code here..
         _key = comboBoxThatHasChanged->getSelectedId() - 1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY, _key);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY, _key);
         _update_notes();
         //[/UserComboBoxCode_comboBoxKey]
     }
@@ -1202,7 +1202,7 @@ void PluginGui::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_comboBoxKeyType] -- add your combo box handling code here..
         _key_type = comboBoxThatHasChanged->getSelectedId() - 1;
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE, _key_type);
         _update_notes();
         //[/UserComboBoxCode_comboBoxKeyType]
     }
@@ -1269,9 +1269,9 @@ void PluginGui::mouseDown (const MouseEvent& e)
         }
         else
         {
-            sliderAttack->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_ATTACK) * 1000);
-            sliderRelease->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_RELEASE) * 1000);
-            sliderAmount->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_AMOUNT));
+            sliderAttack->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_ATTACK) * 1000);
+            sliderRelease->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_RELEASE) * 1000);
+            sliderAmount->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_AMOUNT));
         }
 
         repaint();
@@ -1298,9 +1298,9 @@ void PluginGui::mouseDrag (const MouseEvent& e)
 
             _cur_node.reset(new manual_tune::tune_node);
             _cur_node->is_manual = true;
-            _cur_node->attack = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_ATTACK);
-            _cur_node->release = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_RELEASE);
-            _cur_node->amount = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_AMOUNT);
+            _cur_node->attack = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_ATTACK);
+            _cur_node->release = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_RELEASE);
+            _cur_node->amount = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_AMOUNT);
             sliderAttack->setValue(_cur_node->attack * 1000.);
             sliderRelease->setValue(_cur_node->release * 1000.);
             sliderAmount->setValue(_cur_node->amount);
@@ -1649,37 +1649,37 @@ void PluginGui::_update_gui_parameter()
 
     _parameter_update_id = _proc.get_parameters_update_id();
 
-    toggleButtonAutoTune->setToggleState(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_ENABLE_AUTOTUNE) > 0., dontSendNotification);
-    toggleButtonSnap->setToggleState(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP) > 0., dontSendNotification);
-    toggleButtonTrack->setToggleState(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_ENABLE_TRACK) > 0., dontSendNotification);
+    toggleButtonAutoTune->setToggleState(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_ENABLE_AUTOTUNE) > 0., dontSendNotification);
+    toggleButtonSnap->setToggleState(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP) > 0., dontSendNotification);
+    toggleButtonTrack->setToggleState(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_ENABLE_TRACK) > 0., dontSendNotification);
 
-    sliderAttack->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_ATTACK) * 1000, dontSendNotification);
-    sliderRelease->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_RELEASE) * 1000, dontSendNotification);
-    sliderAmount->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_DEF_AMOUNT), dontSendNotification);
+    sliderAttack->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_ATTACK) * 1000, dontSendNotification);
+    sliderRelease->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_RELEASE) * 1000, dontSendNotification);
+    sliderAmount->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_DEF_AMOUNT), dontSendNotification);
 
-    sliderATAmount->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_AT_AMOUNT), dontSendNotification);
-    sliderATSmooth->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_AT_SMOOTH), dontSendNotification);
+    sliderATAmount->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_AT_AMOUNT), dontSendNotification);
+    sliderATSmooth->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_AT_SMOOTH), dontSendNotification);
 
 
     {
-        _key = (std::int32_t)std::round(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY));
-        _key_type = (std::int32_t)std::round(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_KEY_TYPE));
+        _key = (std::int32_t)std::round(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY));
+        _key_type = (std::int32_t)std::round(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_KEY_TYPE));
 
         comboBoxKey->setSelectedId(_key + 1, dontSendNotification);
         comboBoxKeyType->setSelectedId(_key_type + 1, dontSendNotification);
 
-        _notes[_key_A] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_A) > 0 ? 1: -1;
-        _notes[_key_Bb] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_Bb) > 0 ? 1: -1;
-        _notes[_key_B] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_B) > 0 ? 1: -1;
-        _notes[_key_C] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_C) > 0 ? 1: -1;
-        _notes[_key_Db] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_Db) > 0 ? 1: -1;
-        _notes[_key_D] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_D) > 0 ? 1: -1;
-        _notes[_key_Eb] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_Eb) > 0 ? 1: -1;
-        _notes[_key_E] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_E) > 0 ? 1: -1;
-        _notes[_key_F] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_F) > 0 ? 1: -1;
-        _notes[_key_Gb] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_Gb) > 0 ? 1: -1;
-        _notes[_key_G] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_G) > 0 ? 1: -1;
-        _notes[_key_Ab] = _proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_Ab) > 0 ? 1: -1;
+        _notes[_key_A] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_A) > 0 ? 1: -1;
+        _notes[_key_Bb] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_Bb) > 0 ? 1: -1;
+        _notes[_key_B] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_B) > 0 ? 1: -1;
+        _notes[_key_C] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_C) > 0 ? 1: -1;
+        _notes[_key_Db] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_Db) > 0 ? 1: -1;
+        _notes[_key_D] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_D) > 0 ? 1: -1;
+        _notes[_key_Eb] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_Eb) > 0 ? 1: -1;
+        _notes[_key_E] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_E) > 0 ? 1: -1;
+        _notes[_key_F] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_F) > 0 ? 1: -1;
+        _notes[_key_Gb] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_Gb) > 0 ? 1: -1;
+        _notes[_key_G] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_G) > 0 ? 1: -1;
+        _notes[_key_Ab] = _proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_Ab) > 0 ? 1: -1;
 
         toggleButtonNoteA->setToggleState((_notes[_key_A] > 0), dontSendNotification);
         toggleButtonNoteBb->setToggleState((_notes[_key_Bb] > 0), dontSendNotification);
@@ -1696,8 +1696,8 @@ void PluginGui::_update_gui_parameter()
 
     }
 
-    sliderMinLen->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT) * 1000, dontSendNotification);
-    sliderMaxInterval->setValue(_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL) * 1000, dontSendNotification);
+    sliderMinLen->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MIN_LENGHT) * 1000, dontSendNotification);
+    sliderMaxInterval->setValue(_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP_MAX_INTERVAL) * 1000, dontSendNotification);
 }
 
 float PluginGui::_snap_pitch(float pitch)
@@ -1706,7 +1706,7 @@ float PluginGui::_snap_pitch(float pitch)
     std::int32_t left = i;
     std::int32_t right = i;
 
-    if (_proc.get_parameter(AutotalentAudioProcessor::PARAMETER_ID_SNAP) < 1 || _is_ctrl)
+    if (_proc.get_parameter(MXTuneAudioProcessor::PARAMETER_ID_SNAP) < 1 || _is_ctrl)
     {
         return pitch;
     }
@@ -1820,18 +1820,18 @@ void PluginGui::_update_notes()
         toggleButtonNoteAb->setToggleState((_notes[11] > 0), dontSendNotification);
 
 
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_A, (_notes[0] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Bb, (_notes[1] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_B, (_notes[2] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_C, (_notes[3] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Db, (_notes[4] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_D, (_notes[5] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Eb, (_notes[6] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_E, (_notes[7] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_F, (_notes[8] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Gb, (_notes[9] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_G, (_notes[10] > 0)? 1.: 0.);
-        _proc.set_parameter(AutotalentAudioProcessor::PARAMETER_ID_Ab, (_notes[11] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_A, (_notes[0] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Bb, (_notes[1] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_B, (_notes[2] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_C, (_notes[3] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Db, (_notes[4] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_D, (_notes[5] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Eb, (_notes[6] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_E, (_notes[7] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_F, (_notes[8] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Gb, (_notes[9] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_G, (_notes[10] > 0)? 1.: 0.);
+        _proc.set_parameter(MXTuneAudioProcessor::PARAMETER_ID_Ab, (_notes[11] > 0)? 1.: 0.);
     }
 }
 
@@ -2039,7 +2039,7 @@ void PluginGui::_draw_note_limit(float& start_x, float& start_y, float& end_x, f
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PluginGui" componentName=""
-                 parentClasses="public AudioProcessorEditor, public Timer" constructorParams="AutotalentAudioProcessor&amp; p"
+                 parentClasses="public AudioProcessorEditor, public Timer" constructorParams="MXTuneAudioProcessor&amp; p"
                  variableInitialisers="AudioProcessorEditor(p), _proc(p)" snapPixels="8"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="860" initialHeight="600">

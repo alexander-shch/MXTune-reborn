@@ -1,24 +1,12 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <JuceHeader.h>
 #include "mx_tune.h"
 #include "PluginParameter.h"
 
-//==============================================================================
-/**
-*/
-class AutotalentAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
+class MXTuneAudioProcessor  : public AudioProcessor, public AudioProcessorParameter::Listener
 {
 public:
     
@@ -70,8 +58,8 @@ public:
     };
 public:
     //==============================================================================
-    AutotalentAudioProcessor();
-    ~AutotalentAudioProcessor();
+    MXTuneAudioProcessor();
+    ~MXTuneAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -112,7 +100,7 @@ public:
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
     
 public:
-    const std::shared_ptr<mx_tune>& get_mt_tune() { return _mx_tune; }
+    const std::unique_ptr<mx_tune>& get_mt_tune() { return _mx_tune; }
     manual_tune& get_manual_tune() { return _mx_tune->get_manual_tune(); }
     double get_cur_time() { return _cur_time; }
     double get_bpm() { return _bpm; }
@@ -137,7 +125,7 @@ private:
     
 private:
     std::mutex _mtx;
-    std::shared_ptr<mx_tune> _mx_tune = 0;
+    std::unique_ptr<mx_tune> _mx_tune;
     std::uint32_t _sample_rate = 44100;
     double _cur_time = 0;
     double _bpm = 0;
@@ -147,10 +135,7 @@ private:
     bool _is_bypassed = false;
     
     std::int32_t _notes[12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    //float _def_attack = 0.050;
-    //float _def_release = 0.050;
-    //float _def_amount = 0.5;
-    
+
     float _at_amount = 0.6;
     float _at_smooth = 0.7;
     bool _is_enable_at = false;
@@ -205,10 +190,9 @@ private:
     };
     
     std::string _misc_param;
-    volatile std::uint32_t _parameter_update_id = 0;
+    std::atomic<std::uint32_t> _parameter_update_id{0};
     bool _gesture_is_starting = false;
     
-    String _state_info;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutotalentAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MXTuneAudioProcessor)
 };
