@@ -261,7 +261,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path package | Out-Null
-          Copy-Item -Recurse "build/MXTune_artefacts/VST3/MXTune.vst3" "package/"
+          Copy-Item -Recurse "build/MXTune_artefacts/Release/VST3/MXTune.vst3" "package/"
           Compress-Archive -Path "package/MXTune.vst3" `
             -DestinationPath "MXTune-$env:PLUGIN_VERSION-windows.zip" -Force
 

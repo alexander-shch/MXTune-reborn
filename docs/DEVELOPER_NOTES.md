@@ -26,9 +26,9 @@ Standard macOS plugins dynamically linked to Homebrew libraries crash on machine
 2. **RPath Fixing** — uses `install_name_tool` to rewrite load paths to `@loader_path/../Frameworks/`.
 3. **Deep Signing** — signs internal dylibs individually before performing a deep signature on the outer bundle.
 
-### Windows (Static Linking)
+### Windows (Dynamic Linking with vcpkg)
 
-Dependencies are statically linked via MinGW/MSYS2 to avoid missing DLL issues on end-user machines. The `CMakeLists.txt` is configured for this automatically when building under MINGW64.
+Dependencies are dynamically linked using vcpkg with the MSVC toolchain. The required DLLs are automatically copied to the VST3 bundle directory during the build process. This approach provides better compatibility with modern Windows development workflows while still ensuring the plugin is self-contained.
 
 ### Linux
 
