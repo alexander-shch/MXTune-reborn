@@ -22,12 +22,18 @@ add_executable(mxtune_tests
     test_undo_redo.cpp
     test_auto_tune.cpp
     test_manual_tune.cpp
+    test_pitch_shifter_talent.cpp
+    test_pitch_shifter_smb.cpp
+    test_svf_filter.cpp
     ${SRC_DIR}/midi_msg.cpp
     ${SRC_DIR}/delay.cpp
     ${SRC_DIR}/ring_buffer.cpp
     ${SRC_DIR}/auto_tune.cpp
     ${SRC_DIR}/manual_tune.cpp
     ${SRC_DIR}/undo_redo.cpp
+    ${SRC_DIR}/pitch_shifter_talent.cpp
+    ${SRC_DIR}/pitch_shifter_smb.cpp
+    ${SRC_DIR}/smbPitchShift.cpp
 )
 
 target_include_directories(mxtune_tests PRIVATE ${SRC_DIR})
