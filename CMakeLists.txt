@@ -138,7 +138,7 @@ if(WIN32)
     # Copy vcpkg DLLs to the VST3 bundle directory for Windows
     add_custom_command(TARGET MXTune POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:MXTune>/MXTune.vst3/Contents/x86_64-win"
-        COMMAND powershell -Command "Get-ChildItem -Path '${VCPKG_INSTALLED_DIR}/x64-windows/bin/*.dll' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item $_.FullName -Destination '$<TARGET_FILE_DIR:MXTune>/MXTune.vst3/Contents/x86_64-win/' }"
+        COMMAND powershell -Command "Get-ChildItem -Path '${VCPKG_INSTALLED_DIR}/x64-windows/bin/*.dll' -ErrorAction SilentlyContinue | ForEach-Object { Copy-Item $$_.FullName -Destination '$<TARGET_FILE_DIR:MXTune>/MXTune.vst3/Contents/x86_64-win/' }"
         COMMENT "Copying vcpkg DLLs to VST3 bundle directory"
     )
 else()
